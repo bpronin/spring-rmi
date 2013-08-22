@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="rmiServer" class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <property name="serviceName" value="receiver"/>
+        <property name="service" ref="receiver"/>
+        <property name="serviceInterface" value="com.bo.Processor"/>
+        <property name="registryPort" value="1199"/>
+    </bean>
+
+    <bean id="rmiClient" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://localhost:1199/receiver"/>
+        <property name="serviceInterface" value="com.bo.Processor"/>
+    </bean>
+
+    <bean id="receiver" class="com.bo.Receiver"/>
+
+    <bean id="sender" class="com.bo.Sender">
+        <property name="receiver" ref="rmiClient"/>
+        <!--<property name="receiver" ref="receiver"/>-->
+    </bean>
+
+    <bean id="continuousSender" class="com.bo.ContinuousSender" init-method="start">
+        <property name="receiver" ref="rmiClient"/>
+    </bean>
+
+</beans>

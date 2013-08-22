@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-rmi="http://www.springframework.org/schema/integration/rmi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd http://www.springframework.org/schema/integration/rmi http://www.springframework.org/schema/integration/rmi/spring-integration-rmi.xsd">
+
+    <int:channel id="output"/>
+
+    <int:gateway id="gateway" service-interface="com.bo.Processor" default-request-channel="output"/>
+
+    <!-- IMPORTANT! name of channel should be the same as in rmi-receiver.xml. it's a part of RMI host name-->
+    <int:channel id="remote"/>
+
+    <int-rmi:outbound-gateway id="rmiOutGateway"
+                              host="localhost"
+                              port="1199"
+                              request-channel="output"
+                              remote-channel="remote"/>
+
+    <bean id="sender" class="com.bo.Sender">
+        <property name="receiver" ref="gateway"/>
+    </bean>
+
+    <bean id="continuousSender" class="com.bo.ContinuousSender">
+        <property name="receiver" ref="gateway"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-rmi="http://www.springframework.org/schema/integration/rmi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd http://www.springframework.org/schema/integration/rmi http://www.springframework.org/schema/integration/rmi/spring-integration-rmi.xsd">
+
+    <!-- IMPORTANT! name of channel should be the same as in rmi-sender.xml. it's a part of RMI host name-->
+    <int:publish-subscribe-channel id="remote"/>
+
+    <int-rmi:inbound-gateway id="rmiInGateway"
+                             registry-port="1199"
+                             request-channel="remote"/>
+
+    <bean id="receiver" class="com.bo.Receiver"/>
+
+    <int:service-activator input-channel="remote" ref="receiver" method="process"/>
+
+</beans>
